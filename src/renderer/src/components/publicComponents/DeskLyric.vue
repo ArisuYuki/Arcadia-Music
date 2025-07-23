@@ -66,65 +66,56 @@
     const lyric: Array<string> = []
     const transLyric: Array<string> = []
     const totalLyric: Array<any> = []
-    time.push(0)
-    lyric.push(`${currentTrack.value.ar[0].name} - ${currentTrack.value.name}`)
+    //标记是否成功解析到了任何有效的原始歌词
+    let hasLyric = false
+
     if (currentTrack.value.local) {
       time.push(0)
-      lyric.push(`本地音乐: ${currentTrack.value.name}`)
-      //本地音乐没歌词
+      lyric.push(`本地音乐`)
       if (currentTrack.value.lyric === undefined) {
-        return {
-          time: [0],
-          totalLyric: [{ lyric: lyric[0], transLyric: '' }]
-        }
+        return { time: [0], totalLyric: [{ lyric: lyric[0], transLyric: '' }] }
       } else {
-        //有歌词，读取
         lyricData = {
-          lrc: {
-            lyric: currentTrack.value.lyric.lrc
-          },
-          tlyric: {
-            lyric: currentTrack.value.lyric.tlyric
-          }
+          lrc: { lyric: currentTrack.value.lyric.lrc },
+          tlyric: { lyric: currentTrack.value.lyric.tlyric }
         }
       }
     } else {
-      //网易云音乐,加载
       lyricData = await window.api.netEaseCloud.song_lyric({ id: currentTrack.value.id })
     }
-    if (lyricData.tlyric === undefined) {
-      return {
-        time: [0],
-        totalLyric: [{ lyric: '纯音乐，请欣赏', transLyric: '' }]
+
+    time.push(0)
+    lyric.push(`${currentTrack.value.ar[0].name} - ${currentTrack.value.name}`)
+
+    // 处理原始歌词
+    if (lyricData?.lrc?.lyric) {
+      hasLyric = true
+      for (const item of FReadLyric(lyricData.lrc.lyric)) {
+        if (item[1].trim()) {
+          time.push(parseFloat(FGetLyricTime(item[0])))
+          lyric.push(item[1].trim())
+        }
       }
     }
-    if (lyricData.lrc === undefined) {
-      return {
-        time: [0],
-        totalLyric: [{ lyric: '暂无歌词哦', transLyric: '' }]
+
+    // 处理翻译歌词
+    if (lyricData?.tlyric?.lyric) {
+      for (const item of FReadLyric(lyricData.tlyric.lyric)) {
+        const transTime = parseFloat(FGetLyricTime(item[0]))
+        const index = time.findIndex((t) => transTime === t)
+        if (index !== -1) transLyric[index] = item[1].trim()
       }
-    }
-    for (const item of FReadLyric(lyricData.lrc.lyric)) {
-      if (item[1].trim()) {
-        time.push(parseFloat(FGetLyricTime(item[0])))
-        lyric.push(item[1].trim())
-      }
-    }
-    transLyric.length = lyric.length
-    for (const item of FReadLyric(lyricData.tlyric.lyric)) {
-      const transTime = parseFloat(FGetLyricTime(item[0]))
-      const index = time.findIndex((t) => transTime === t)
-      if (index !== -1) transLyric[index] = item[1].trim()
+      transLyric.length = lyric.length
     }
     for (let i = 0; i < lyric.length; i++) {
       totalLyric.push({ lyric: lyric[i], transLyric: transLyric[i] })
     }
-    if (!totalLyric[0]) {
-      return {
-        time: [0],
-        totalLyric: [{ lyric: '暂无歌词哦', transLyric: '' }]
-      }
+
+    // 如果既没有原始歌词也没有翻译歌词（除了歌曲名），则显示“暂无歌词哦”
+    if (!hasLyric && totalLyric.length <= 1) {
+      return { time: [0], totalLyric: [{ lyric: '暂无歌词哦', transLyric: '' }] }
     }
+
     return { time, totalLyric }
   }
   function FLoadLyric(timeAndLyric: any) {
