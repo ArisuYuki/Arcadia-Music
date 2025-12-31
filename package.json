@@ -38,6 +38,10 @@
         "Name": "Arcadia"
       }
     },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns"
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": true,

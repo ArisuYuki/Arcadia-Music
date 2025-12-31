@@ -1,7 +1,11 @@
 import { Tray, Menu, nativeImage, type BrowserWindow } from 'electron'
 import iconPath from '../../resources/icon.png?asset'
 export function createTray(mainWindow: BrowserWindow) {
-  const icon = nativeImage.createFromPath(iconPath)
+  // macOS 推荐状态栏图标尺寸为 22x22 或 24x24
+  let icon = nativeImage.createFromPath(iconPath)
+  if (process.platform === 'darwin') {
+    icon = icon.resize({ width: 22, height: 22 })
+  }
   const tray = new Tray(icon)
   const contextMenu = Menu.buildFromTemplate([
     {

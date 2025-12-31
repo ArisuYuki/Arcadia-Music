@@ -19,6 +19,7 @@ function createWindow(): void {
     // transparent: true,
     // show: false,
     titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 12, y: 13 },
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

@@ -1,29 +1,38 @@
 <template>
   <div class="menu">
     <div class="drag" @dblclick="FMaximizeWindows"></div>
-    <v-btn
-      icon
-      :ripple="false"
-      variant="text"
-      size="32"
-      @click="FMinimizeWindows"
-      class="menu-option"
-    >
-      <v-icon icon="mdi-window-minimize" size="small"></v-icon>
-    </v-btn>
-    <v-btn
-      icon
-      :ripple="false"
-      variant="text"
-      size="32"
-      @click="FMaximizeWindows"
-      class="menu-option"
-    >
-      <v-icon icon="mdi-window-maximize" size="small"></v-icon>
-    </v-btn>
-    <v-btn icon :ripple="false" variant="text" size="32" @click="FCloseWindows" class="menu-option">
-      <v-icon icon="mdi-window-close" size="small"></v-icon>
-    </v-btn>
+    <div v-if="!isMac" class="icon-container">
+      <v-btn
+        icon
+        :ripple="false"
+        variant="text"
+        size="32"
+        @click="FMinimizeWindows"
+        class="menu-option"
+      >
+        <v-icon icon="mdi-window-minimize" size="small"></v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        :ripple="false"
+        variant="text"
+        size="32"
+        @click="FMaximizeWindows"
+        class="menu-option"
+      >
+        <v-icon icon="mdi-window-maximize" size="small"></v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        :ripple="false"
+        variant="text"
+        size="32"
+        @click="FCloseWindows"
+        class="menu-option"
+      >
+        <v-icon icon="mdi-window-close" size="small"></v-icon>
+      </v-btn>
+    </div>
     <v-dialog
       v-if="dialog"
       v-model="dialogControl"
@@ -56,6 +65,7 @@
   import { inject, ref } from 'vue'
   import type { Setting } from '@renderer/utils/setting'
   const globalSetting = inject('setting') as Setting
+  const isMac = window.api.platform === 'darwin'
   const dialog = ref(false)
   const dialogControl = ref(true)
   const behavior = ref('close')

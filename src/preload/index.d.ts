@@ -5,6 +5,7 @@ declare global {
     electronMessagePort: MessagePort
     electron: ElectronAPI
     api: {
+      platform: string
       netEaseCloud: {
         login_qr_key(): Promise<any>
         login_qr_create(unikey: string): Promise<any>

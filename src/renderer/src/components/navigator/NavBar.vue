@@ -1,6 +1,6 @@
 <template>
   <div class="app-bar" :style="stateStore.background">
-    <div class="tittle">Arcadia</div>
+    <div :style="{ marginLeft: isMac ? '72px' : '0px' }" class="title">Arcadia</div>
     <div class="drag"></div>
     <div class="app-options">
       <v-btn icon variant="text" size="32" class="nav-btn" @click="$router.go(-1)">
@@ -30,6 +30,7 @@
           }"
           class="search-bar"
           ref="search-bar"
+          :style="{ minWidth: isMac ? '250px' : '100px' }"
         >
           <template #append-inner>
             <v-icon icon="mdi-delete" @click="searchText = ''"></v-icon>
@@ -76,11 +77,13 @@
         @mouseenter="cogRotate = true"
         @animationend="cogRotate = false"
         @click="$router.push({ name: 'setting' })"
+        :style="{ marginRight: isMac ? '12px' : '0px' }"
       >
         <v-icon icon="mdi-cog" :class="{ cog: cogRotate }" size="x-large"></v-icon>
       </v-btn>
     </div>
-    <Menu class="menu" />
+
+    <Menu class="menu" :style="{ width: isMac ? 'auto' : '22%' }" />
   </div>
 </template>
 
@@ -95,6 +98,7 @@
   const searchSuggest = useTemplateRef('search-suggest')
   const searchBar = useTemplateRef('search-bar')
   const stateStore = useStateStore()
+  const isMac = window.api.platform === 'darwin'
   const minWidth = ref('100px')
   const maxWidth = ref('200px')
   const cogRotate = ref(false)
@@ -137,7 +141,7 @@
   :deep(.v-btn__overlay) {
     display: none;
   }
-  .tittle {
+  .title {
     font-size: 1.2rem;
     margin-left: 1rem;
     color: white;

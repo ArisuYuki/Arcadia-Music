@@ -10,7 +10,7 @@ import { utils } from './utils'
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('api', { ...api, platform: process.platform })
     contextBridge.exposeInMainWorld('utils', utils)
   } catch (error) {
     console.error(error)
@@ -19,7 +19,7 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.electron = electronAPI
   // @ts-ignore (define in dts)
-  window.api = api
+  window.api = { ...api, platform: process.platform }
   // @ts-ignore (define in dts)
   window.utils = utils
 }
